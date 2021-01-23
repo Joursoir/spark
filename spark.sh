@@ -23,7 +23,7 @@ then
 		Code was written by Joursoir <chat@joursoir.net>
 		This is free and unencumbered software released into the public domain.
 
-		Synopsis: spark [number] [number] [number] ...
+		Synopsis: spark [-h|--help] [number] ...
 		EOF
 	exit 0
 fi
