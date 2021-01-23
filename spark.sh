@@ -1,5 +1,33 @@
 #!/usr/bin/env bash
 
+function add_to_array() {
+	case $1 in
+		*[!0-9]*) exit 1 ;;
+		*) ;;
+	esac
+	array+=( $1 )
+
+	if [ $1 -gt $MAX ]; then
+		MAX=$1
+	fi
+	if [ $1 -lt $MIN ]; then
+		MIN=$1
+	fi
+}
+
+if [ -t 0 ] && [ $# -lt 2 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]
+then
+	cat <<-EOF
+		Spark
+
+		Code was written by Joursoir <chat@joursoir.net>
+		This is free and unencumbered software released into the public domain.
+
+		Synopsis: spark [number] [number] [number] ...
+		EOF
+	exit 0
+fi
+
 case `uname -m` in
 	x86_64|amd64) # 64 bit
 		MAX=$(( -2**63 ));
@@ -12,25 +40,21 @@ case `uname -m` in
 		MIN=$(( 2*15-1 )) ;;
 esac
 
-for i in "$@"
-do
-	case $i in
-		''|*[!0-9]*) exit 1 ;;
-		*) ;;
-	esac
-
-	if [ $i -gt $MAX ]; then
-		MAX=$i
-	fi
-	if [ $i -lt $MIN ]; then
-		MIN=$i
-	fi
-done
+if [ $# -gt 1 ]
+then
+	for i in "$@"; do
+		add_to_array $i
+	done
+else
+	while read -r i; do
+		add_to_array $i
+	done
+fi
 
 LEVELS=8
 DIFF=$(( $MAX - $MIN + 1 ))
 
-for i in "$@"
+for i in "${array[@]}"
 do
 	H=$(( 1 + ($i - $MIN + 1) * ($LEVELS-1) / $DIFF ))
 
@@ -38,3 +62,4 @@ do
 done
 
 echo
+exit 0
